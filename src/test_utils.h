@@ -26,7 +26,7 @@ int test_handler(test_fn fn, int argc, char** argv)	{
 	if (argc > 1)	{
 		in = fopen(argv[1], "r");
 
-		if (argc > 2)	{
+		if (argc > 2 && strcmp(argv[2], "0"))	{
 			memset(tempname, 0, 255);
 			tmpnam(tempname);
 			out = fopen(tempname, "w");
@@ -46,7 +46,7 @@ int test_handler(test_fn fn, int argc, char** argv)	{
 		if (res == 0)	{
 		// We didn't receive an error from the actual test handler, so let's test the 
 		// output against the benchmark
-			if (argc > 2)	{
+			if (argc > 2 && strcmp(argv[2], "0"))	{
 				fclose(out);
 
 				memset(cmd, 0, 512);
