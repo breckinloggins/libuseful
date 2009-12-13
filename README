@@ -2,7 +2,7 @@ libuseful - A collection of (mostly) useful data structures, algorithms, and uti
 
 - hash table
 - linked list
-- string builder
+- string builder (let's you append to a cstring with automatic reallocation)
 - test harness utility
 
 
