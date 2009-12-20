@@ -64,3 +64,20 @@ void sb_append_strn(stringbuilder* sb, const char* src, int length)	{
 void sb_append_str(stringbuilder* sb, const char* src)	{
 	sb_append_strn(sb, src, strlen(src));
 }
+
+/**
+ * Allocates and copies a new cstring based on the current stringbuilder contents 
+ */
+char* sb_make_cstring(stringbuilder* sb)	{
+	char* out;
+	
+	if (!sb->pos)	{
+		return 0;
+	}
+	
+	out = (char*)malloc(sb->pos + 1);
+	strcpy(out, sb_cstring(sb));
+	
+	return out;
+}
+

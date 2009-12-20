@@ -35,6 +35,11 @@ void sb_append_strn(stringbuilder* sb, const char* src, int length);
 void sb_append_str(stringbuilder* sb, const char* src);
 
 /**
+ * Allocates and copies a new cstring based on the current stringbuilder contents 
+ */
+char* sb_make_cstring(stringbuilder* sb);
+
+/**
  * Returns the stringbuilder as a regular C String
  */
 #define sb_cstring(sb) ((sb)->cstr)

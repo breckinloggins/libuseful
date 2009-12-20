@@ -24,6 +24,7 @@ static void _assert_sb_stats(stringbuilder* sb, const char* str, int size, int r
 }
 
 DEFINE_TEST_FUNCTION {	
+	char *cstr;
 	stringbuilder* sb = sb_new_with_size(1);
 	
 	sb_append_ch(sb, 'H');
@@ -42,6 +43,13 @@ DEFINE_TEST_FUNCTION {
 	
 	_assert_sb_stats(sb, "Hello, World!", strlen("Hello, World!")+1, 7);
 	
+	cstr = sb_make_cstring(sb);
+	if (strcmp(cstr, "Hello, World!"))	{
+		fprintf(stderr, "CSTR (%s) does not equal SB (%s)\n", cstr, sb_cstring(sb));
+		exit(-1);
+	}
+	free(cstr);
+		
 	sb_reset(sb);
 	
 	sb_append_ch(sb, 'H');
@@ -57,6 +65,8 @@ DEFINE_TEST_FUNCTION {
 	sb_append_ch(sb, '?');
 	
 	_assert_sb_stats(sb, "Hi!This is a longer string that I am appending, doncha know?", 71, 8);
+	
+	
 	
 	sb_destroy(sb, 1);
 	return 0;
