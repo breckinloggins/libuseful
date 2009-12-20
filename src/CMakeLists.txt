@@ -10,6 +10,10 @@ SET(useful_LIB_SRCS
 	hashtable.c
 	list.c
 	stringbuilder.c
+	test_utils.h
+	include/hashtable.h
+	include/list.h
+	include/stringbuilder.h
 )
 
 ADD_LIBRARY(useful ${useful_LIB_SRCS})
