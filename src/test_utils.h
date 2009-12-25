@@ -8,13 +8,69 @@
 typedef int (*test_fn)(FILE* in, FILE* out, int argc, char** argv);
 
 #define DEFINE_TEST_FUNCTION int test_function(FILE* in, FILE* out, int argc, char** argv)
-#define RUN_TEST return test_handler(test_function, argc, argv)
+#define RUN_TEST return test_main(test_function, argc, argv)
 
-int test_handler(test_fn fn, int argc, char** argv)	{
+/**
+ * Returns zero if two files are identical, non-zero otherwise
+ */
+int diff_files(const char* name1, const char* name2)	{
 	char cmd[512];
-	char tempname[255];
+	memset(cmd, 0, 512);
+	sprintf(cmd, "diff %s %s", name1, name2);
+	return system(cmd) != 0;	
+}
+
+int test_runner(char* infile, char* bmkfile, test_fn fn, int argc, char** argv)	{
 	FILE* in;
 	FILE* out;
+	int res;
+	char tempname[255];
+	
+	if (!infile)	{
+		in = stdin;
+	} else {
+		in = fopen(infile, "r");
+		if (!in)	{
+			fprintf(stderr, "Could not open %s for reading\n", infile);
+			return -1;
+		}
+	}
+	
+	if (!bmkfile)	{
+		out = stdout;
+	} else {
+		memset(tempname, 0, 255);
+		tmpnam(tempname);
+		out = fopen(tempname, "w");
+		if (!out)	{
+			fprintf(stderr, "Could not open %s for writing\n", tempname);
+		}
+	}
+	
+	res = fn(in, out, argc, argv);
+	
+	if (infile)	{
+		fclose(in);
+	}
+	
+	if (bmkfile)	{
+		fclose(out);
+		
+		if (res == 0)	{
+			// Success from the actual test function, so pass it to the diff and see if the 
+			// benchmark matches the output
+			res = diff_files(bmkfile, tempname);
+		}
+		
+		remove(tempname);
+	}
+	
+	return res;
+}
+
+int test_main(test_fn fn, int argc, char** argv)	{
+	char* infile;
+	char* bmkfile;
 	int res;
 	
 	if (argc > 4)	{
@@ -24,43 +80,18 @@ int test_handler(test_fn fn, int argc, char** argv)	{
 	}
 	
 	if (argc > 1)	{
-		in = fopen(argv[1], "r");
-
-		if (argc > 2 && strcmp(argv[2], "0"))	{
-			memset(tempname, 0, 255);
-			tmpnam(tempname);
-			out = fopen(tempname, "w");
-		} else {
-			out = stdout;
-		}
+		infile = argv[1];
 	} else {
-		in = stdin;
-		out = stdout;
+		infile = 0;
 	}
 	
-	res = fn(in, out, argc, argv);
-	
-	if (argc > 1)	{
-		fclose(in);
-
-		if (res == 0)	{
-		// We didn't receive an error from the actual test handler, so let's test the 
-		// output against the benchmark
-			if (argc > 2 && strcmp(argv[2], "0"))	{
-				fclose(out);
-
-				memset(cmd, 0, 512);
-				sprintf(cmd, "diff %s %s", argv[2], tempname);
-				res = system(cmd);
-				res = (res != 0);
-				remove(tempname);
-			} else {
-				res = 0;
-			}
-		}
+	if (argc > 2 && strcmp(argv[2], "0"))	{
+		bmkfile = argv[2];
+	} else { 
+		bmkfile = 0;
 	}
 	
-	return res;
+	return test_runner(infile, bmkfile, fn, argc, argv);
 }
 
 int get_file_length(const char* filename)	{
