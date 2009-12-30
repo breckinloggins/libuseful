@@ -3,17 +3,17 @@ PROJECT(libuseful)
 
 FIND_PROGRAM(DiffFound diff)
 IF(DiffFound STREQUAL "DiffFound-NOTFOUND")
-	MESSAGE(FATAL_ERROR "The diff tool is not found on your system.  This is required for testing!")
+    MESSAGE(FATAL_ERROR "The diff tool is not found on your system.  This is required for testing!")
 ENDIF(DiffFound STREQUAL "DiffFound-NOTFOUND")
 
 SET(useful_LIB_SRCS
-	hashtable.c
-	list.c
-	stringbuilder.c
-	test_utils.h
-	include/hashtable.h
-	include/list.h
-	include/stringbuilder.h
+    hashtable.c
+    list.c
+    stringbuilder.c
+    test_utils.h
+    include/hashtable.h
+    include/list.h
+    include/stringbuilder.h
 )
 
 ADD_LIBRARY(useful ${useful_LIB_SRCS})

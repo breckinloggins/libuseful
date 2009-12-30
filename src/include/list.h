@@ -4,18 +4,18 @@
 #ifndef LIST_H
 #define LIST_H
 
-typedef struct list_element_tag	{
-	void* 						data;
-	struct list_element_tag*	next;
+typedef struct list_element_tag {
+    void*                       data;
+    struct list_element_tag*    next;
 } list_element;
 
-typedef struct list_tag	{
-	int size;
-	
-	void (*destroy)(void *data);			
-	
-	list_element* head;
-	list_element* tail;
+typedef struct list_tag {
+    int size;
+    
+    void (*destroy)(void *data);            
+    
+    list_element* head;
+    list_element* tail;
 } list;
 
 /**
@@ -50,7 +50,7 @@ int list_remove_next(list *l, list_element* after, void **data);
 /**
  * Returns the number of elements in the list
  */
-#define list_size(list)	((list)->size)
+#define list_size(list) ((list)->size)
 
 /**
  * Returns the head element of a list
@@ -65,12 +65,12 @@ int list_remove_next(list *l, list_element* after, void **data);
 /**
  * Returns 1 if the given element is at the head of the given list, 0 otherwise
  */
-#define list_is_head(list, element)	((element) == (list)->head? 1 : 0)
+#define list_is_head(list, element) ((element) == (list)->head? 1 : 0)
 
 /**
  * Returns 1 if the given element is at the tail of the given list, 0 otherwise
  */
-#define list_is_tail(list, element)	((element) == (list)->tail? 1 : 0)
+#define list_is_tail(list, element) ((element) == (list)->tail? 1 : 0)
 
 /**
  * Returns the data contained in the given element

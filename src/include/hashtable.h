@@ -7,15 +7,15 @@
 
 #include "list.h"
 
-typedef struct hashtable_tag	{
-	int 	buckets;
-	int 	(*h)(const void* key);
-	int 	(*match)(const void* key1, const void* key2);
-	void	(*destroy)(void *data);
-	
-	int		size;
-	
-	list*	table;
+typedef struct hashtable_tag    {
+    int     buckets;
+    int     (*h)(const void* key);
+    int     (*match)(const void* key1, const void* key2);
+    void    (*destroy)(void *data);
+    
+    int     size;
+    
+    list*   table;
 } hashtable;
 
 typedef struct hashtable_iter_tag hashtable_iter;
@@ -24,18 +24,18 @@ typedef struct hashtable_iter_tag hashtable_iter;
  * Initializes the given hashtable, with the given number of buckets to hold values.  Takes
  * pointers to functions for:
  *   h: The hash function.  If NULL, P.J. Weinberger's string hash function from the Dragon Book
- *		will be used
+ *      will be used
  *   match: The match function.  Used to determine if two keys match.  If NULL, !strcmp will be 
- *		used
- *	 destroy: The function to call when the value data of a key needs to be cleaned-up.  Pass in 0
- * 		if you wish to take care of this yourself, or you could pass in free() if the objects are simple
+ *      used
+ *   destroy: The function to call when the value data of a key needs to be cleaned-up.  Pass in 0
+ *      if you wish to take care of this yourself, or you could pass in free() if the objects are simple
  *
- * Returns 0 if the hashtable was initialized successfully, -1 otherwise	
+ * Returns 0 if the hashtable was initialized successfully, -1 otherwise    
  */
 int ht_init(hashtable* ht, int buckets, int (*h)(const void* key), 
-	int (*match)(const void* key1, const void* key2), 
-	void (*destroy)(void *data));
-	
+    int (*match)(const void* key1, const void* key2), 
+    void (*destroy)(void *data));
+    
 /** 
  * Destroys the given hashtable, calling the user-supplied "destroy" function on each value in the hash
  */
