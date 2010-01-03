@@ -3,9 +3,13 @@
  *
  */
 
-#include "include/stringbuilder.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
+
+#include "include/platform.h"
+#include "include/stringbuilder.h"
+
 
 /**
  * Creates a new stringbuilder with the default chunk size
@@ -63,6 +67,25 @@ void sb_append_strn(stringbuilder* sb, const char* src, int length) {
  */
 void sb_append_str(stringbuilder* sb, const char* src)  {
     sb_append_strn(sb, src, strlen(src));
+}
+
+/**
+ * Appends the formatted string to the given string builder
+ */
+void sb_append_strf(stringbuilder* sb, const char* fmt, ...)    {
+    char *str;
+    va_list arglist;
+
+    va_start(arglist, fmt);
+    xp_vasprintf(&str, fmt, arglist);
+    va_end(arglist);
+    
+    if (!str)   {
+        return;
+    }
+    
+    sb_append_str(sb, str);
+    free(str);
 }
 
 /**

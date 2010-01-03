@@ -55,18 +55,16 @@ DEFINE_TEST_FUNCTION {
     sb_append_ch(sb, 'H');
     sb_append_ch(sb, 'i');
     sb_append_ch(sb, '!');
-    
     _assert_sb_stats(sb, "Hi!", strlen("Hello, World!")+1, 7);
     
     sb_append_str(sb, "This is a longer string that I am appending, doncha know");
-    
     _assert_sb_stats(sb, "Hi!This is a longer string that I am appending, doncha know", 71, 8);
     
     sb_append_ch(sb, '?');
-    
     _assert_sb_stats(sb, "Hi!This is a longer string that I am appending, doncha know?", 71, 8);
     
-    
+    sb_append_strf(sb, " And %s %s!", "even", "longer");
+    _assert_sb_stats(sb, "Hi!This is a longer string that I am appending, doncha know? And even longer!", 79, 9);
     
     sb_destroy(sb, 1);
     return 0;

@@ -1,2 +1,3 @@
 []  Options parser
-[]  sb_append_strf
+[X]  sb_append_strf
+[X]  Cross platform routines: xp_strdup, xp_vsnprintf, xp_vasprintf, xp_asprintf

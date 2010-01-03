@@ -7,18 +7,25 @@ IF(DiffFound STREQUAL "DiffFound-NOTFOUND")
 ENDIF(DiffFound STREQUAL "DiffFound-NOTFOUND")
 
 SET(useful_LIB_SRCS
-    hashtable.c
+    platform.c
+	hashtable.c
     list.c
     stringbuilder.c
     test_utils.h
-    include/hashtable.h
+    optin.c
+	include/platform.h
+	include/hashtable.h
     include/list.h
     include/stringbuilder.h
+	include/optin.h
 )
 
 ADD_LIBRARY(useful ${useful_LIB_SRCS})
 
 ENABLE_TESTING()
 
-ADD_EXECUTABLE(stringbuilder_test stringbuilder.c testing/stringbuilder_test.c)
+ADD_EXECUTABLE(stringbuilder_test platform.c stringbuilder.c testing/stringbuilder_test.c)
 ADD_TEST(stringbuilder_0 ${EXECUTABLE_OUTPUT_PATH}/stringbuilder_test)
+
+ADD_EXECUTABLE(platform_test platform.c testing/platform_test.c)
+ADD_TEST(platform_0 ${EXECUTABLE_OUTPUT_PATH}/platform_test)

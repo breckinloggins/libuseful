@@ -35,6 +35,11 @@ void sb_append_strn(stringbuilder* sb, const char* src, int length);
 void sb_append_str(stringbuilder* sb, const char* src);
 
 /**
+ * Appends the formatted string to the given string builder
+ */
+void sb_append_strf(stringbuilder* sb, const char* fmt, ...);
+
+/**
  * Allocates and copies a new cstring based on the current stringbuilder contents 
  */
 char* sb_make_cstring(stringbuilder* sb);
