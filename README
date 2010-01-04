@@ -1,8 +1,17 @@
-libuseful - A collection of (mostly) useful data structures, algorithms, and utilities, including:
+libuseful
+=========
+
+A collection of (mostly) useful data structures, algorithms, and cross-platform utilities,
+including:
 
 - hash table
 - linked list
-- string builder (let's you append to a cstring with automatic reallocation)
+- string builder (lets you append to a cstring with automatic reallocation)
 - test harness utility
+- options parser ("optin")
 
+optin - An options parser
+-------------------------
+Optin is a simple command line options parser that replaces getopt() and adds consistent options parsing accross
+all platforms on which libuseful is supported.
 

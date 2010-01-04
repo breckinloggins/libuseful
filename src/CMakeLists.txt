@@ -29,3 +29,6 @@ ADD_TEST(stringbuilder_0 ${EXECUTABLE_OUTPUT_PATH}/stringbuilder_test)
 
 ADD_EXECUTABLE(platform_test platform.c testing/platform_test.c)
 ADD_TEST(platform_0 ${EXECUTABLE_OUTPUT_PATH}/platform_test)
+
+ADD_EXECUTABLE(optin_test list.c hashtable.c platform.c optin.c testing/optin_test.c)
+ADD_TEST(optin_0 ${EXECUTABLE_OUTPUT_PATH}/optin_test)

@@ -1,7 +1,13 @@
 []  Optin
 	[X]	Option handling API
-	[]	Tighter checks on adding redundant "no" flag options
-	[]	Option parser
+	[X]	Option parser
+	[X]	Handle missing but required options
+	[]	Fix bug in hashtable iterator when all options satisfied
+	[]	Handle "no" flag options
+	[]	Handle short names
+	[]	Support setting short name explicitly
+	[]	Restrucure argc and argv after removing the options, leaving only the remaining arguments for the client
+		code to process
 	[]	Test routines
 [X]  sb_append_strf
 [X]  Cross platform routines: xp_strdup, xp_vsnprintf, xp_vasprintf, xp_asprintf
