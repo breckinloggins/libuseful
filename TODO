@@ -1,3 +1,8 @@
-[]  Options parser
+[]  Optin
+	[X]	Option handling API
+	[]	Tighter checks on adding redundant "no" flag options
+	[]	Option parser
+	[]	Test routines
 [X]  sb_append_strf
 [X]  Cross platform routines: xp_strdup, xp_vsnprintf, xp_vasprintf, xp_asprintf
+[X]	 Enforce out of source builds even when libuseful is included as a submodule
