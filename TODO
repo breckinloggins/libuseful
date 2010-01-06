@@ -2,7 +2,8 @@
 	[X]	Option handling API
 	[X]	Option parser
 	[X]	Handle missing but required options
-	[]	Fix bug in hashtable iterator when all options satisfied
+	[X]	Add hashtable tests
+	[X]	Fix bug in hashtable iterator
 	[]	Handle "no" flag options
 	[]	Handle short names
 	[]	Support setting short name explicitly

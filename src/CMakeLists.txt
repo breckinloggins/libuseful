@@ -24,6 +24,9 @@ ADD_LIBRARY(useful ${useful_LIB_SRCS})
 
 ENABLE_TESTING()
 
+ADD_EXECUTABLE(hashtable_test platform.c list.c hashtable.c testing/hashtable_test.c)
+ADD_TEST(hashtable_0 ${EXECUTABLE_OUTPUT_PATH}/hashtable_test)
+
 ADD_EXECUTABLE(stringbuilder_test platform.c stringbuilder.c testing/stringbuilder_test.c)
 ADD_TEST(stringbuilder_0 ${EXECUTABLE_OUTPUT_PATH}/stringbuilder_test)
 

@@ -187,7 +187,12 @@ hashtable_iter* ht_iter_next(hashtable_iter* current)   {
     list_element* elem;
     int i;
     
+    if (!current)   {
+        return 0;
+    }
+    
     cur = (hashtable_iter_impl*)current;
+    i = cur->current_bucket;
     elem = cur->current->next;
     if (!elem)  {
         for (i = cur->current_bucket+1; i < cur->ht->buckets; i++)  {
