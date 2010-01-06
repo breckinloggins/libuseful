@@ -133,6 +133,22 @@ void optin_add_string(optin* o, const char* name, const char* description, int h
 void optin_set_callback(optin* o, const char* name, optin_fn callback);
 
 /**
+ * Sets the one-character shortname of the given option
+ *
+ * o            - The optin object which contains the option
+ * name         - The (full) name of the option
+ * shortname    - The one-character short name of the option
+ *
+ * NOTES:
+ *  - It is not necessary to call this function unless you wish to override the default short name, which
+ *    is the first letter of the long name
+ *  - If an existing short name exists (including the default), it will be removed and replaced
+ *  - If an identical short name exists, it will be replaced with this one, even if it is for a different
+ *    option
+ */
+void optin_set_shortname(optin* o, const char* name, char shortname);
+
+/**
  * Sets the given usage text that will be shown when arguments do not match and as the top line of the
  * help
  */
@@ -165,12 +181,12 @@ int optin_process_option(optin* o, const char* opt, const char* value);
  *
  * o        - The optin object
  * argc     - Pointer to the argument count, should include the program name
- * argv     - Pointer to the arguments, *argv[0] should be the program name
+ * argv     - Pointer to the arguments, argv[0] should be the program name
  *
  * On exit, argc and argv will be modified to be the arguments left over after option processing
  * RETURNS: zero if options were parsed successfully, nonzero if there was an error
  */
-int optin_process(optin* o, int* argc, char*** argv);
+int optin_process(optin* o, int* argc, char** argv);
 
 /**
  * Prints diagnostic information about the current state of the given optin object

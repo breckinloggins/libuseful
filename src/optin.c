@@ -39,9 +39,19 @@ typedef struct _option_tag {
 
 } _option;
 
+/* The object we will use in our hashtables, let's us hash an option multiple times by different keys
+   (such as the long and short name) */
+typedef struct _option_wrapper_tag  {
+    char* key;
+    int alias;                  /* Only one of the wrappers "owns" the option and can clean it up */
+    
+    _option* o;
+} _option_wrapper;
+
 /* Main object used in the optin API.  Exposed to users as an opaque handle object */
 struct optin_tag    {
     hashtable* options;
+     
     char* usage;
     
     int argc;
@@ -51,54 +61,106 @@ struct optin_tag    {
 /**
  * The hash function we will use for the option dictionary
  */
-static int _option_hash(const void* key)  {
-    return ht_hashpjw(((_option*)key)->name);
+static int _option_wrapper_hash(const void* key)  {
+    return ht_hashpjw(((_option_wrapper*)key)->key);
 }
 
 /**
  * The function we will use to determine if two options match
  */
-static int _option_match(const void* key1, const void* key2)  {
-    return !strcmp(((_option*)key1)->name, ((_option*)key2)->name);
+static int _option_wrapper_match(const void* key1, const void* key2)  {
+    return !strcmp(((_option_wrapper*)key1)->key, ((_option_wrapper*)key2)->key);
 }
 
 /**
  * The function that will be called when an option must be destroyed
  */
-static void _option_destroy(void *data)   {
-    _option* o = (_option*)data;
+static void _option_wrapper_destroy(void *data)   {
+    _option_wrapper* w = (_option_wrapper*)data;
     
-    free(o->name);
-    free(o->description);
+    if (!w->alias)  {
+        /* We own the option, therefore we must clean it up */
+        free(w->o->name);
+        free(w->o->description);
+        free(w->o);
+    }
     
-    free(o);
+    free(w->key);
+    free(w);
 }
 
 /**
  * Looks up an option in the option dictionary by the given name.  Return NULL if not found
  */
 static _option* _query(hashtable* options, const char* name)    {
-    _option* query_option, *option;
+    _option_wrapper* query_wrapper, *wrapper;
 
     if (!options)  {
        return 0;
     }
 
-    query_option = (_option*)malloc(sizeof(_option));
-    memset(query_option, 0, sizeof(_option));
-    query_option->name = (char*)name;
+    query_wrapper = (_option_wrapper*)malloc(sizeof(_option_wrapper));
+    memset(query_wrapper, 0, sizeof(_option_wrapper));
+    query_wrapper->key = (char*)name;
 
-    option = query_option;
+    wrapper = query_wrapper;
 
-    if (ht_lookup(options, (void*)&option) != 0) {
+    if (ht_lookup(options, (void*)&wrapper) != 0) {
         /* No value for this key */
-        free(query_option);
+        free(query_wrapper);
         return 0;
     }
 
-    free(query_option);
+    free(query_wrapper);
 
-    return option;
+    return wrapper->o;
+}
+
+/**
+ * Sets the one-character shortname of the given option
+ *
+ * options      - The options dictionary which contains the option
+ * name         - The (full) name of the option
+ * shortname    - The one-character short name of the option
+ *
+ * NOTES:
+ *  - It is not necessary to call this function unless you wish to override the default short name, which
+ *    is the first letter of the long name
+ *  - If an existing short name exists (including the default), it will be removed and replaced
+ *  - If an identical short name exists, it will be replaced with this one, even if it is for a different
+ *    option
+ */
+void _set_shortname(hashtable* options, const char* name, char shortname)    {
+    _option* option;
+    _option_wrapper* wrapper, *query_wrapper;
+    char* str_shortname;
+    
+    if (!options) {
+        return;
+    }
+    
+    option = _query(options, name);
+    if (!option)    {
+        return;
+    }
+    
+    xp_asprintf(&str_shortname, "%c", shortname);
+    
+    wrapper = (_option_wrapper*)malloc(sizeof(_option_wrapper));
+    wrapper->key = str_shortname;
+    wrapper->alias = 1;             /* We don't own the option */
+    query_wrapper = wrapper;
+    if (ht_lookup(options, (void*)&wrapper) != 0)    {
+        /* It's not in there, just add it */
+        wrapper->key = xp_strdup(str_shortname);
+        ht_insert(options, (void*)wrapper);
+    } else {
+        /* Already in there */
+        free(query_wrapper->key);
+        free(query_wrapper);
+    }
+    
+    wrapper->o = option;
 }
 
 /**
@@ -106,6 +168,7 @@ static _option* _query(hashtable* options, const char* name)    {
  * the options dictionary if not found
  */
 static _option* _query_or_new(hashtable* options, const char* name)   {
+    _option_wrapper* option_wrapper;
     _option* option;
     
     option = _query(options, name);
@@ -115,7 +178,16 @@ static _option* _query_or_new(hashtable* options, const char* name)   {
         memset(option, 0, sizeof(_option));
         option->name = xp_strdup(name);
         
-        ht_insert(options, (void*)option);
+        /* Key by the long name */
+        option_wrapper = (_option_wrapper*)malloc(sizeof(_option_wrapper));
+        memset(option_wrapper, 0, sizeof(_option_wrapper));
+        option_wrapper->key = xp_strdup(name);
+        option_wrapper->alias = 0;              /* We own the option */
+        option_wrapper->o = option;
+        ht_insert(options, (void*)option_wrapper);
+        
+        /* Key by the short name */
+        _set_shortname(options, name, name[0]);
     }
     
     return option;
@@ -184,7 +256,7 @@ optin* optin_new()  {
     memset(o, 0, sizeof(optin));
     
     o->options = (hashtable*)malloc(sizeof(hashtable));
-    ht_init(o->options, 17, _option_hash, _option_match, _option_destroy);
+    ht_init(o->options, 17, _option_wrapper_hash, _option_wrapper_match, _option_wrapper_destroy);
     
     optin_add_switch(o, "help", "Displays help for the program");
     optin_set_callback(o, "help", _help_fn);
@@ -336,6 +408,28 @@ void optin_set_callback(optin* o, const char* name, optin_fn callback)    {
 }
 
 /**
+ * Sets the one-character shortname of the given option
+ *
+ * o            - The optin object which contains the option
+ * name         - The (full) name of the option
+ * shortname    - The one-character short name of the option
+ *
+ * NOTES:
+ *  - It is not necessary to call this function unless you wish to override the default short name, which
+ *    is the first letter of the long name
+ *  - If an existing short name exists (including the default), it will be removed and replaced
+ *  - If an identical short name exists, it will be replaced with this one, even if it is for a different
+ *    option
+ */
+void optin_set_shortname(optin* o, const char* name, char shortname)    {
+    if (!o) {
+        return;
+    }
+    
+    _set_shortname(o->options, name, shortname);
+}
+
+/**
  * Sets the given usage text that will be shown when arguments do not match and as the top line of the
  * help
  */
@@ -437,11 +531,13 @@ int optin_process_option(optin* o, const char* opt, const char* value)  {
  * On exit, argc and argv will be modified to be the arguments left over after option processing
  * RETURNS: zero if options were parsed successfully, nonzero if there was an error
  */
-int optin_process(optin* o, int* argc, char*** argv) {
+int optin_process(optin* o, int* argc, char** argv) {
     int i, ret;
     int is_long_option;
+    int next_argv;              /* Used to keep track of the next valid argv slot for shuffling non-option args */ 
     char* arg, *opt, *value;
     _option* option;
+    _option_wrapper* wrapper;
     hashtable_iter* opt_iter;
     
     enum { STATE_NORMAL, STATE_IN_OPTION} state;
@@ -449,7 +545,8 @@ int optin_process(optin* o, int* argc, char*** argv) {
     is_long_option = 0;
     state = STATE_NORMAL;
     o->argc = *argc;
-    o->argv = *argv;
+    o->argv = argv;
+    next_argv = 1;
     
     ret = 0;
     i = 1;                      /* Skip over the program name */
@@ -463,23 +560,30 @@ int optin_process(optin* o, int* argc, char*** argv) {
                 opt = arg+1;
                 continue;
             }
+            argv[next_argv++] = o->argv[i];
             break;
         case STATE_IN_OPTION:
+            (*argc)--;
             is_long_option = (*opt == '-');
             value = 0;
             if (is_long_option) {
                 opt++;
                 if (*opt == '\0')   {
                     /* We have a lone --, that means to stop arg processing NOW */
+                    i++;
                     goto done;
                 }
                 
                 /* We need to check if there's an equal sign in the longopt somewhere */
                 value = opt;
                 while (*value)  {
-                    if (*value == '=')  {
+                    if (*value == '=' && is_long_option)  {
                         *value++ = '\0';      /* Modify string so opt ends at where equals sign was */
                         break;
+                    } else if (*value == '=')    {
+                        fprintf(stderr, "Equals sign not allowed in short option\n");
+                        ret = OPTIN_ERR_INVALID_OPTION;
+                        goto done;
                     }
                     value++;
                 }
@@ -507,6 +611,8 @@ int optin_process(optin* o, int* argc, char*** argv) {
                         fprintf(stderr, "Option '%s' requires a value\n", opt);
                         ret = OPTIN_ERR_VALUE_MISSING; 
                         goto done;
+                    } else {
+                        (*argc)--;
                     }
                     
                     value = o->argv[i+1];                    
@@ -531,17 +637,28 @@ int optin_process(optin* o, int* argc, char*** argv) {
         }
     }
 done:
-    
+    /* Analyze required options */
     opt_iter = ht_iter_begin(o->options);
     while (opt_iter)    {
-        option = ht_value(opt_iter);
-        if (option && option->has_default == OPTIN_REQUIRED && !option->set) {
-            fprintf(stderr, "Missing required option '%s'\n", option->name);
-            ret = OPTIN_ERR_OPTION_MISSING;
-            break;
+        
+        wrapper = ht_value(opt_iter);
+        
+        /* Only consider the real options, ignore aliases so we don't check the same option twice */
+        if (wrapper && !wrapper->alias)   {
+            option = wrapper->o;
+            if (option && option->has_default == OPTIN_REQUIRED && !option->set) {
+                fprintf(stderr, "Missing required option '%s'\n", option->name);
+                ret = OPTIN_ERR_OPTION_MISSING;
+                break;
+            }
         }
-       
+        
         opt_iter = ht_iter_next(opt_iter);
+    }
+    
+    /* Reorder any args after the options in the caller's argv array */
+    for (; i < o->argc; i++)    {
+        argv[next_argv++] = o->argv[i];
     }
     return ret;
 }

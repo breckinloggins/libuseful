@@ -34,4 +34,4 @@ ADD_EXECUTABLE(platform_test platform.c testing/platform_test.c)
 ADD_TEST(platform_0 ${EXECUTABLE_OUTPUT_PATH}/platform_test)
 
 ADD_EXECUTABLE(optin_test list.c hashtable.c platform.c optin.c testing/optin_test.c)
-ADD_TEST(optin_0 ${EXECUTABLE_OUTPUT_PATH}/optin_test)
+ADD_TEST(optin_0 ${EXECUTABLE_OUTPUT_PATH}/optin_test --test=1 -fval2 3.14 -ival2 10 -strval2 "this is a string" -g)

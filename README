@@ -8,10 +8,10 @@ including:
 - linked list
 - string builder (lets you append to a cstring with automatic reallocation)
 - test harness utility
-- options parser ("optin")
+- options parser ("OptOn")
 
-optin - An options parser
+OptIn - An options parser
 -------------------------
-Optin is a simple command line options parser that replaces getopt() and adds consistent options parsing accross
+OptIn is a simple command line options parser that replaces getopt() and adds consistent options parsing accross
 all platforms on which libuseful is supported.
 

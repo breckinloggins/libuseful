@@ -5,11 +5,12 @@
 	[X]	Add hashtable tests
 	[X]	Fix bug in hashtable iterator
 	[]	Handle "no" flag options
-	[]	Handle short names
-	[]	Support setting short name explicitly
-	[]	Restrucure argc and argv after removing the options, leaving only the remaining arguments for the client
+	[]	Handle multiple short options on one hyphen
+	[X]	Handle short names
+	[X]	Support setting short name explicitly
+	[X]	Restrucure argc and argv after removing the options, leaving only the remaining arguments for the client
 		code to process
-	[]	Test routines
+	[X]	Test routines
 [X]  sb_append_strf
 [X]  Cross platform routines: xp_strdup, xp_vsnprintf, xp_vasprintf, xp_asprintf
 [X]	 Enforce out of source builds even when libuseful is included as a submodule
