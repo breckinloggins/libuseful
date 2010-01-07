@@ -6,9 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "include/platform.h"
-#include "include/hashtable.h"
-#include "include/optin.h"
+#include "platform.h"
+#include "hashtable.h"
+#include "optin.h"
 
 /* Describes an option in the optin dictionary */
 typedef struct _option_tag {

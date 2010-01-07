@@ -1,6 +1,6 @@
-#include "../test_utils.h"
-#include "../include/platform.h"
-#include "../include/hashtable.h"
+#include "test_utils.h"
+#include "platform.h"
+#include "hashtable.h"
 
 static int _hash(const void* key)  {
     return ht_hashpjw((char*)key);

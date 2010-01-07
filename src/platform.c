@@ -4,7 +4,7 @@
  
  #include <stdlib.h>
  #include <string.h>
- #include "include/platform.h"
+ #include "platform.h"
  
  /**
   * Duplicates the given c string.  It is the caller's responsibility to manage the memory
