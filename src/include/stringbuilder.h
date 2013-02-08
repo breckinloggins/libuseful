@@ -55,13 +55,12 @@ char* sb_make_cstring(stringbuilder* sb);
 #define sb_reset(sb) ((sb)->pos = 0)
 
 #define sb_append_ch(sb, ch)    {                                                       \
-        if ((sb)->pos == (sb)->size - 1 )   {                                           \
+        if ((sb)->pos == (sb)->size)   {                                                \
             (sb)->reallocs++;                                                           \
-            (sb)->size = (sb)->size + ((sb)->size >> 2)+ 1;                             \
+            (sb)->size = (sb)->size + ((sb)->size >> 2) + 1;                            \
             (sb)->cstr = (char*)realloc((sb)->cstr, (sb)->size );                       \
         }                                                                               \
         (sb)->cstr[(sb)->pos++] = ch;                                                   \
-        (sb)->cstr[(sb)->pos] = '\0';                                                   \
     }                                                                           
                                                             
 #endif // STRINGBUILDER_H
