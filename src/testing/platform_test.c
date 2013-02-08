@@ -1,5 +1,5 @@
-#include "../test_utils.h"
-#include "../include/platform.h"
+#include "test_utils.h"
+#include "platform.h"
 
 DEFINE_TEST_FUNCTION {  
     char* src = "This is a copied string";

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "include/hashtable.h"
+#include "hashtable.h"
 
 typedef struct hashtable_iter_tag   {
     hashtable* ht;

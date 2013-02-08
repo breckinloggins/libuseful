@@ -7,8 +7,8 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "include/platform.h"
-#include "include/stringbuilder.h"
+#include "platform.h"
+#include "stringbuilder.h"
 
 
 /**

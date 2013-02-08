@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "include/list.h"
+#include "list.h"
 
 /**
  * Initializes the list pointed to by "l".  destory is a pointer to a function that is called

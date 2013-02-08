@@ -1,5 +1,5 @@
-#include "../test_utils.h"
-#include "../include/stringbuilder.h"
+#include "test_utils.h"
+#include "stringbuilder.h"
 
 static void _sb_info(FILE* out, stringbuilder* sb)  {
     fprintf(out, "sb(%p) cstr: %p  pos: %d  size: %d  reallocs: %d\n", 

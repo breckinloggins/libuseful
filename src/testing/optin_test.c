@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "../include/optin.h"
+#include "optin.h"
 
 int main(int argc, char** argv) {
     int ret, i;

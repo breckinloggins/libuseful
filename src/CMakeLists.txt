@@ -11,14 +11,17 @@ SET(useful_LIB_SRCS
 	hashtable.c
     list.c
     stringbuilder.c
-    test_utils.h
     optin.c
-	include/platform.h
+	include/test_utils.h    
+    include/platform.h
 	include/hashtable.h
     include/list.h
     include/stringbuilder.h
 	include/optin.h
 )
+
+
+INCLUDE_DIRECTORIES(include)
 
 ADD_LIBRARY(useful ${useful_LIB_SRCS})
 
