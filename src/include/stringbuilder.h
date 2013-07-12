@@ -25,6 +25,16 @@ void sb_destroy(stringbuilder* sb, int free_string);
 stringbuilder* sb_new_with_size(int size);
 
 /**
+ * Resets the stringbuilder to empty
+ */
+void sb_reset(stringbuilder* sb);
+
+/**
+ * Appends the given character to the string builder
+ */
+void sb_append_ch(stringbuilder* sb, const char ch);
+
+/**
  * Appends at most length of the given src string to the string buffer
  */
 void sb_append_strn(stringbuilder* sb, const char* src, int length);
@@ -48,19 +58,5 @@ char* sb_make_cstring(stringbuilder* sb);
  * Returns the stringbuilder as a regular C String
  */
 #define sb_cstring(sb) ((sb)->cstr)
-
-/**
- * Resets the stringbuilder to empty
- */
-#define sb_reset(sb) ((sb)->pos = 0)
-
-#define sb_append_ch(sb, ch)    {                                                       \
-        if ((sb)->pos == (sb)->size)   {                                                \
-            (sb)->reallocs++;                                                           \
-            (sb)->size = (sb)->size + ((sb)->size >> 2) + 1;                            \
-            (sb)->cstr = (char*)realloc((sb)->cstr, (sb)->size );                       \
-        }                                                                               \
-        (sb)->cstr[(sb)->pos++] = ch;                                                   \
-    }                                                                           
                                                             
 #endif // STRINGBUILDER_H
